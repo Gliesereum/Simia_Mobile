@@ -4,6 +4,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import User from '../constants/actions/User';
+import Socket from '../constants/actions/Socket';
 import Config from '../constants/config';
 
 const postLogin = (email, password) => {
@@ -26,5 +27,10 @@ export function* loginSaga(action) {
   } catch (err) {
     yield put({ type: User.USER_LOGIN_FAILURE, error: err });
   }
+}
+
+export function* logoutSaga(action) {
+  AsyncStorage.removeItem('token');
+  yield put({ type: Socket.REMOVE_SOCKET });
 }
 

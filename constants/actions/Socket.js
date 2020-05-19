@@ -1,0 +1,4 @@
+export default {
+  ADD_SOCKET: 'ADD_SOCKET',
+  REMOVE_SOCKET: 'REMOVE_SOCKET',
+};

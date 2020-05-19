@@ -5,7 +5,11 @@ import User from '../constants/actions/User';
 
 import {
   loginSaga,
+  logoutSaga,
 } from './user';
+import {
+  ioSaga,
+} from './io'
 import {
 
 } from './rtc';
@@ -13,5 +17,7 @@ import {
 export default function* watcherSaga() {
   yield all([
     takeEvery(User.USER_LOGIN, loginSaga),
+    takeEvery(User.USER_LOGOUT, logoutSaga),
+    takeEvery(User.USER_LOGIN_SUCCESS, ioSaga),
   ]);
 }
