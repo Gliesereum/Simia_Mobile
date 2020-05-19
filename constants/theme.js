@@ -7,6 +7,8 @@ const COLOR = {
   onActive: '',
   background: '#EFEFF4',
 
+  warning: '#ff0000',
+
   divider: 'rgba(0, 0, 0, 0.4)',
   disable: 'rgba(77, 79, 137, 0.2)',
 };

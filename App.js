@@ -8,7 +8,7 @@
 
 import 'react-native-gesture-handler';
 import React from 'react';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
 import {
@@ -21,10 +21,20 @@ import watcherSaga from './sagas';
 import StreamActionPanel from './components/StreamActionPanel';
 import { Routes } from './navigation/Route';
 
+// create the saga middleware
 const sagaMiddleware = createSagaMiddleware();
 
-let store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
+// dev tools middleware
+const reduxDevTools =
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
 
+// create a redux store with our reducer above and middleware
+let store = createStore(
+  rootReducer,
+  reduxDevTools ? compose(applyMiddleware(sagaMiddleware), reduxDevTools) : applyMiddleware(sagaMiddleware),
+);
+
+// run the saga
 sagaMiddleware.run(watcherSaga);
 
 const App: () => React$Node = () => {
