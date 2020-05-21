@@ -1,4 +1,5 @@
 import Actions from '../constants/actions/Actions';
+import User from '../constants/actions/User';
 
 const initialState = {
   peerConnection: null,
@@ -12,6 +13,8 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case User.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

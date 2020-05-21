@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 
 import Config from '../constants/config';
 import Socket from '../constants/actions/Socket';
+import Actions from '../constants/actions/Actions';
 
 const ioConnect = token => {
   const socket = io.connect((Config.url || '') + '/', { forceNode: true });
@@ -18,8 +19,17 @@ const ioConnect = token => {
 function ioSubscribe(socket) {
   return eventChannel(emit => {
     socket.on('authenticated', () => {
-      console.log('authenticated emited');
       emit({ type: Socket.ADD_SOCKET, socket });
+      socket.emit('list-rooms', {});
+      socket.emit('search', { search: '' });
+    });
+    socket.on('list-rooms', data => {
+      console.log('Emitted LIST-ROOMS');
+      emit({ type: Actions.LIST_ROOMS_RESULT, data });
+    });
+    socket.on('search', data => {
+      console.log('Emitted SEARCH');
+      emit({ type: Actions.SEARCH_RESULT, data });
     });
     return () => {};
   });

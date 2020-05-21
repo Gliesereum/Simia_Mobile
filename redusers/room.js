@@ -1,24 +1,22 @@
-import Socket from '../constants/actions/Socket';
+import Actions from '../constants/actions/Actions';
 import User from '../constants/actions/User';
 
 const initialState = {
-  socket: undefined,
+  rooms: [],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Socket.ADD_SOCKET:
+    case Actions.LIST_ROOMS_RESULT:
       return {
         ...state,
-        socket: action.socket,
-      }
-    case Socket.REMOVE_SOCKET:
-      return initialState;
+        rooms: action.data.rooms,
+      };
     case User.USER_LOGOUT:
       return initialState;
     default:
       return state;
   }
-}
+};
 
 export default reducer;

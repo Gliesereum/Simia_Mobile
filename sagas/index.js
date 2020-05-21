@@ -10,6 +10,7 @@ import {
 import {
   ioSaga,
 } from './io'
+import { searchSaga } from './search';
 import {
 
 } from './rtc';
@@ -19,5 +20,7 @@ export default function* watcherSaga() {
     takeEvery(User.USER_LOGIN, loginSaga),
     takeEvery(User.USER_LOGOUT, logoutSaga),
     takeEvery(User.USER_LOGIN_SUCCESS, ioSaga),
+
+    takeEvery(Actions.SEARCH, searchSaga),
   ]);
 }
