@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import { View, Button, Text, StyleSheet, Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 
 import Center from '../components/Center';
-import { renderField, renderSwitchField } from '../components/RenderField';
+import { RenderTextField, RenderSwitchField } from '../components/RenderField';
 import User from '../constants/actions/User';
 import theme from '../constants/theme';
+
+const { width } = Dimensions.get('window');
 
 let LoginPage = ({ navigation, handleSubmit}) => {
   const dispatch = useDispatch();
@@ -35,18 +37,38 @@ let LoginPage = ({ navigation, handleSubmit}) => {
       <Field
         keyboardType="email-address"
         label="Email:"
-        component={renderField}
+        component={(props) => RenderTextField({
+          ...props,
+          input: {
+            ...props.input,
+            inputStyle: {
+              borderWidth: 1,
+              borderRadius: 5,
+            }
+          },
+          containerStyles: { width: width - 32 }
+        })}
         name="email"
       />
       <Field
         keyboardType="default"
         label="Password:"
-        component={renderField}
+        component={(props) => RenderTextField({
+          ...props,
+          input: {
+            ...props.input,
+            inputStyle: {
+              borderWidth: 1,
+              borderRadius: 5,
+            }
+          },
+          containerStyles: { width: width - 32 }
+        })}
         name="password"
       />
       <Field
         label="Keep me logged in!"
-        component={renderSwitchField}
+        component={RenderSwitchField}
         name="keep"
       />
 

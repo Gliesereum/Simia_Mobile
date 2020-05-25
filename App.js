@@ -11,9 +11,6 @@ import React from 'react';
 import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
-import {
-  StyleSheet,
-} from 'react-native';
 
 import rootReducer from './redusers';
 import watcherSaga from './sagas';
@@ -51,14 +48,5 @@ const App: () => React$Node = () => {
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-  }
-});
 
 export default App;

@@ -1,16 +1,23 @@
 import React from 'react';
-import { View, Text, TextInput, Switch, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TextInput, Switch, StyleSheet } from 'react-native';
 import theme from '../constants/theme'
 
-const { width } = Dimensions.get('window');
-
-export function renderField({ label, keyboardType, input: { onChange, ...restInput } }) {
+export function RenderTextField({
+  label,
+  keyboardType,
+  input: { onChange, inputStyle, ...restInput },
+  containerStyles = {}
+}) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{label}</Text>
+    <View style={{ ...styles.container, ...containerStyles }}>
+      {
+        label && (
+          <Text style={styles.text}>{label}</Text>
+        )
+      }
       <TextInput
         keyboardType={keyboardType}
-        style={styles.input}
+        style={{ ...styles.input, ...inputStyle }}
         onChangeText={onChange}
         {...restInput}
       />
@@ -18,7 +25,7 @@ export function renderField({ label, keyboardType, input: { onChange, ...restInp
   )
 }
 
-export function renderSwitchField({ label, input: { onChange, ...restInput } }) {
+export function RenderSwitchField({ label, input: { onChange, ...restInput } }) {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{label}</Text>
@@ -35,19 +42,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     alignItems: 'center',
-    width: width * .8,
     justifyContent: 'space-between',
   },
   text: {
     fontSize: 14,
     fontWeight: 'bold',
-    width: 80,
+    marginRight: 16,
+    width: '30%',
   },
   input: {
     borderColor: theme.COLOR.secondary,
     borderWidth: 1,
     height: 37,
-    width: 220,
+    flex: 1,
     padding: 5,
   },
 });
