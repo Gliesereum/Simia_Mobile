@@ -7,13 +7,23 @@ import { useDispatch } from 'react-redux';
 
 import SearchPage from '../screens/SearchPage';
 import RoomsPage from '../screens/RoomsPage';
+import FavouritePage from '../screens/FavouritePage';
+import RoomModalScreen from '../screens/RoomModalScreen';
 import theme from '../constants/theme';
 import User from '../constants/actions/User';
 
-const Tabs = createBottomTabNavigator();
-const Stack = createStackNavigator();
+// app navigator (contain BottomNavigator and Modal)
+const AppRootStack = createStackNavigator();
 
-export function SearchStack({}) {
+// app tab navigator
+const Tabs = createBottomTabNavigator();
+
+// create stack for each screen of app for adding styles for header
+const SearchStackNavigator = createStackNavigator();
+const RoomsStackNavigator = createStackNavigator();
+const FavouriteStackNavigator = createStackNavigator();
+
+export function Search({}) {
   const dispatch = useDispatch();
 
   const logOut = () => {
@@ -21,7 +31,7 @@ export function SearchStack({}) {
   };
 
   return (
-    <Stack.Navigator
+    <SearchStackNavigator.Navigator
       screenOptions={({ route }) => ({
         headerRight: () => {
           return (
@@ -34,15 +44,15 @@ export function SearchStack({}) {
         headerTitle: route.name,
       })}
     >
-      <Stack.Screen
+      <SearchStackNavigator.Screen
         name="Search List"
         component={SearchPage}
       />
-    </Stack.Navigator>
+    </SearchStackNavigator.Navigator>
   );
 }
 
-export function RoomsStack({}) {
+export function Rooms({}) {
   const dispatch = useDispatch();
 
   const logOut = () => {
@@ -50,7 +60,7 @@ export function RoomsStack({}) {
   };
 
   return (
-    <Stack.Navigator
+    <RoomsStackNavigator.Navigator
       screenOptions={({ route }) => ({
         headerRight: () => {
           return (
@@ -63,25 +73,58 @@ export function RoomsStack({}) {
         headerTitle: route.name,
       })}
     >
-      <Stack.Screen
-        name="Rooms List"
+      <RoomsStackNavigator.Screen
+        name="Room List"
         component={RoomsPage}
       />
-    </Stack.Navigator>
+    </RoomsStackNavigator.Navigator>
   );
 }
 
-export function AppStack({}) {
+export function Favourite({}) {
+  const dispatch = useDispatch();
+
+  const logOut = () => {
+    dispatch({ type: User.USER_LOGOUT});
+  };
+
+  return (
+    <FavouriteStackNavigator.Navigator
+      screenOptions={({ route }) => ({
+        headerRight: () => {
+          return (
+            <Button
+              title="Log Out"
+              onPress={logOut}
+            />
+          );
+        },
+        headerTitle: route.name,
+      })}
+    >
+      <FavouriteStackNavigator.Screen
+        name="Favourite List"
+        component={FavouritePage}
+      />
+    </FavouriteStackNavigator.Navigator>
+  );
+}
+
+export function BottomStack({}) {
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          if (route.name === 'Search') {
+          if (route.name === 'Search List') {
             return <Icon name="search" size={size} color={color} />
           }
 
-          if (route.name === 'Rooms') {
-            return <Icon name="view-list" size={size} color={color} />
+          if (route.name === 'Room List') {
+            return <Icon name="list" size={size} color={color} />
+          }
+
+          if (route.name === 'Favourite') {
+            return <Icon name="star" size={size} color={color} />
           }
         },
       })}
@@ -89,16 +132,38 @@ export function AppStack({}) {
         activeTintColor: theme.COLOR.active,
         inactiveTintColor: theme.COLOR.secondary,
       }}
-      initialRouteName="Search"
+      initialRouteName="Search List"
     >
       <Tabs.Screen
-        name="Search"
-        component={SearchStack}
+        name="Search List"
+        component={Search}
       />
       <Tabs.Screen
-        name="Rooms"
-        component={RoomsStack}
+        name="Room List"
+        component={Rooms}
+      />
+      <Tabs.Screen
+        name="Favourite"
+        component={Favourite}
       />
     </Tabs.Navigator>
+  )
+}
+
+export function AppStack({}) {
+  return (
+    <AppRootStack.Navigator>
+      <AppRootStack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="AppTabs"
+        component={BottomStack}
+      />
+      <AppRootStack.Screen
+        name="AppModal"
+        component={RoomModalScreen}
+      />
+    </AppRootStack.Navigator>
   )
 }

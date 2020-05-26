@@ -15,7 +15,6 @@ let LoginPage = ({ navigation, handleSubmit}) => {
   const loginErrors = useSelector(state => state.user.login)
 
   const login = (data) => {
-    console.log('DATA new', data);
     const loginData = {
       email: data.email || '',
       password: data.password || '',

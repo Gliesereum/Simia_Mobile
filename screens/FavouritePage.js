@@ -1,16 +1,15 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, FlatList, StyleSheet } from 'react-native';
 
 import Card from '../components/Card';
-import theme from '../constants/theme';
 import Actions from '../constants/actions/Actions';
 
 const { width } = Dimensions.get('window');
 
-export default function RoomsPage({ navigation }) {
+export default function FavouritePage({ navigation }) {
   const dispatch = useDispatch();
-  const rooms = useSelector(state => state.rooms.rooms);
+  const favorites = useSelector(state => state.user.favorites);
 
   return (
     <FlatList
@@ -23,22 +22,13 @@ export default function RoomsPage({ navigation }) {
           />
         )
       }}
-      keyExtractor={room => room._id}
-      data={rooms}
+      keyExtractor={f => f._id}
+      data={favorites}
     />
   )
 }
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: 'row',
-    backgroundColor: theme.COLOR.primary,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: width,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
   listContainer: {
     width: width,
     paddingVertical: 8,

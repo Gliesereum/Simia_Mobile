@@ -1,4 +1,5 @@
 import User from '../constants/actions/User';
+import Actions from '../constants/actions/Actions';
 
 const initialState = {
   favorites: [],
@@ -27,6 +28,11 @@ const reducer = (state = initialState, action) => {
         login: action.error.response.data,
       };
       return state;
+    case Actions.TOGGLE_FAVORITE_RESULT:
+    case Actions.LIST_FAVORITES_RESULT:
+      return {
+        ...state, favorites: action.data.favorites
+      };
     case User.USER_LOGOUT:
       return initialState;
     default:

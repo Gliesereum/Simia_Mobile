@@ -2,21 +2,15 @@ import Actions from '../constants/actions/Actions';
 import User from '../constants/actions/User';
 
 const initialState = {
-  text: '',
-  users: [],
+  rooms: [],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case Actions.SEARCH:
+    case Actions.LIST_ROOMS_RESULT:
       return {
         ...state,
-        text: action.search,
-      }
-    case Actions.SEARCH_RESULT:
-      return {
-        ...state,
-        ...action.data,
+        rooms: action.data.rooms,
       };
     case User.USER_LOGOUT:
       return initialState;

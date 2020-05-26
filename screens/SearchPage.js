@@ -1,18 +1,32 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { RenderTextField } from '../components/RenderField';
+import SearchCard from '../components/SearchCard';
 import Actions from '../constants/actions/Actions';
 import theme from '../constants/theme';
 
 const { width } = Dimensions.get('window');
 
-export default function SearchPage({}) {
+export default function RoomsPage({ navigation }) {
   const dispatch = useDispatch();
+  const search = useSelector(state => state.search);
 
-  const search = text => dispatch({ type: Actions.SEARCH, search: text });
+  let list;
+  if (typeof search.users === 'object') {
+    list = search.users.map(user => user);
+  } else {
+    list = [];
+  }
+
+  const searchHandler = text => dispatch({ type: Actions.SEARCH, search: text });
+
+  const createRoom = (userID) => {
+    dispatch({ type: Actions.CREATE_ROOM, counterpart: userID });
+    navigation.navigate('AppModal');
+  };
 
   return (
     <>
@@ -22,16 +36,28 @@ export default function SearchPage({}) {
           keyboardType="default"
           label={null}
           input={{
-            onChange: search,
+            onChange: searchHandler,
             inputStyle: {
               borderWidth: 1,
               borderRadius: 5,
             },
-            // onFocus: () => setIsFocused(!isFocused), TODO: this one must be finished
           }}
           containerStyles={{ width: width * 0.8 }}
         />
       </View>
+      <FlatList
+        style={styles.listContainer}
+        renderItem={({ item }) => {
+          return (
+            <SearchCard
+              user={item}
+              createRoom={createRoom}
+            />
+          )
+        }}
+        keyExtractor={user => user._id}
+        data={list}
+      />
     </>
   )
 }
@@ -45,5 +71,9 @@ const styles = StyleSheet.create({
     width: width,
     paddingVertical: 8,
     paddingHorizontal: 16,
+  },
+  listContainer: {
+    width: width,
+    paddingVertical: 8,
   },
 });

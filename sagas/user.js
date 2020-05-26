@@ -1,4 +1,4 @@
-import { put, call } from 'redux-saga/effects';
+import { put, call, select } from 'redux-saga/effects';
 import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -15,12 +15,15 @@ const postLogin = (email, password) => {
   });
 };
 
+const toggleFavorite = (socket, roomID) => {
+  socket.emit('toggle-favorite', { roomID });
+};
+
 export function* loginSaga(action) {
   try {
     const response = yield call(postLogin, action.email, action.password);
     const token = response.data.token;
     const user = jwtDecode(token);
-    console.log('KEEP', action.keep);
     if (action.keep) AsyncStorage.setItem('token', token);
 
     yield put({ type: User.USER_LOGIN_SUCCESS, user, token, keep: action.keep });
@@ -32,5 +35,10 @@ export function* loginSaga(action) {
 export function* logoutSaga(action) {
   AsyncStorage.removeItem('token');
   yield put({ type: Socket.REMOVE_SOCKET });
+}
+
+export function* toggleFavoriteSaga(action) {
+  const socket = yield select(state => state.socketStore.socket);
+  yield call(toggleFavorite, socket, action.roomID);
 }
 
