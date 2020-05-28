@@ -1,14 +1,12 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Dimensions, FlatList, StyleSheet } from 'react-native';
 
 import Card from '../components/Card';
-import Actions from '../constants/actions/Actions';
 
 const { width } = Dimensions.get('window');
 
 export default function FavouritePage({ navigation }) {
-  const dispatch = useDispatch();
   const favorites = useSelector(state => state.user.favorites);
 
   return (
@@ -16,10 +14,7 @@ export default function FavouritePage({ navigation }) {
       style={styles.listContainer}
       renderItem={({ item }) => {
         return (
-          <Card
-            room={item}
-            toggleFavorite={roomID => dispatch({ type: Actions.TOGGLE_FAVORITE, roomID: roomID })}
-          />
+          <Card room={item} />
         )
       }}
       keyExtractor={f => f._id}

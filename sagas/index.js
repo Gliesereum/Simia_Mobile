@@ -15,8 +15,15 @@ import { searchSaga } from './search';
 import { createRoomSaga } from './room';
 import { sendMessageSaga } from './messagin';
 import {
-
+  rtcCreateRoomSaga,
+  switchVideo,
+  switchPeerVideo,
+  switchAudio,
+  closeSaga,
 } from './rtc';
+import {
+  ringSaga,
+} from './sounds';
 
 export default function* watcherSaga() {
   yield all([
@@ -27,5 +34,11 @@ export default function* watcherSaga() {
     takeEvery(Actions.SEARCH, searchSaga),
     takeEvery(Actions.CREATE_ROOM, createRoomSaga),
     takeEvery(Actions.SEND_MESSAGE, sendMessageSaga),
+    takeEvery(Actions.RTC_ROOM_CREATE, rtcCreateRoomSaga),
+    takeEvery(Actions.RTC_SWITCH_VIDEO, switchVideo),
+    takeEvery(Actions.RTC_SWITCH_PEER_VIDEO, switchPeerVideo),
+    takeEvery(Actions.RTC_SWITCH_AUDIO, switchAudio),
+    takeEvery(Actions.SOUNDS_RING, ringSaga),
+    takeEvery(Actions.RTC_CLOSE, closeSaga),
   ]);
 }

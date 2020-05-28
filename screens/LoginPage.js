@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Button, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 
@@ -10,7 +10,7 @@ import theme from '../constants/theme';
 
 const { width } = Dimensions.get('window');
 
-let LoginPage = ({ navigation, handleSubmit}) => {
+function LoginPage ({ navigation, handleSubmit}) {
   const dispatch = useDispatch();
   const loginErrors = useSelector(state => state.user.login)
 
@@ -36,34 +36,30 @@ let LoginPage = ({ navigation, handleSubmit}) => {
       <Field
         keyboardType="email-address"
         label="Email:"
-        component={(props) => RenderTextField({
-          ...props,
-          input: {
-            ...props.input,
-            inputStyle: {
-              borderWidth: 1,
-              borderRadius: 5,
-            }
-          },
-          containerStyles: { width: width - 32 }
-        })}
+        component={RenderTextField}
         name="email"
+        inputStyles={{
+          borderWidth: 1,
+          borderRadius: 5,
+        }}
+        containerStyles={{
+          width: width - 32,
+        }}
+        autoCapitalize="none"
       />
       <Field
         keyboardType="default"
         label="Password:"
-        component={(props) => RenderTextField({
-          ...props,
-          input: {
-            ...props.input,
-            inputStyle: {
-              borderWidth: 1,
-              borderRadius: 5,
-            }
-          },
-          containerStyles: { width: width - 32 }
-        })}
+        component={RenderTextField}
         name="password"
+        inputStyles={{
+          borderWidth: 1,
+          borderRadius: 5,
+        }}
+        containerStyles={{
+          width: width - 32,
+        }}
+        autoCapitalize="none"
       />
       <Field
         label="Keep me logged in!"
@@ -81,7 +77,7 @@ let LoginPage = ({ navigation, handleSubmit}) => {
 
 export default reduxForm({
   form: 'login',
-})(LoginPage)
+})(LoginPage);
 
 const styles = StyleSheet.create({
   errorBox: {

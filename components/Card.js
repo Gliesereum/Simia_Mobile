@@ -5,16 +5,22 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import theme from '../constants/theme';
 import Config from '../constants/config';
+import Actions from '../constants/actions/Actions';
+import { rtcCall } from '../utils';
 
-export default function Card({ room, toggleFavorite }) {
+export default function Card({ room }) {
   const { people } = room;
+  const dispatch = useDispatch();
   const user = useSelector(state => state.user);
+  const status = useSelector(state => state.status);
 
   let other = {};
 
-  people.forEach(person => {
-    if (user.id !== person._id) other = person;
-  })
+  if (!room.isGroup) {
+    people.forEach(person => {
+      if (user.id !== person._id) other = person;
+    });
+  }
 
   const Picture = ({ picture, user }) => {
     if (picture) {
@@ -38,23 +44,43 @@ export default function Card({ room, toggleFavorite }) {
     if (favorite._id === room._id) isFavorite = true;
   });
 
+  const getClass = () => {
+    let statusClass = 'offline';
+    if (status.online.includes(other._id)) statusClass = 'online';
+    if (status.away.includes(other._id)) statusClass = 'away';
+    if (status.busy.includes(other._id)) statusClass = 'busy';
+
+    return statusClass;
+  };
+
+  const toggleFavorite = () => dispatch({ type: Actions.TOGGLE_FAVORITE, roomID: room._id });
+
+  const handleCall = () => {
+    rtcCall({ room, status, other, video: false, audio: true, dispatch });
+  };
+
+  const handleVideoCall = () => {
+    rtcCall({ room, status, other, video: true, audio: true, dispatch });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
         <Picture picture={room.isGroup ? room.picture : other.picture} user={other} />
+        {!room.isGroup && <View style={{ ...styles.statusBox, ...styles[getClass()] }} />}
       </View>
       <View style={styles.main}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.email}>{room.isGroup ? 'Group' : `@${user.username}`}</Text>
       </View>
       <View style={styles.features}>
-        <TouchableOpacity onPress={() => toggleFavorite(room._id )}>
+        <TouchableOpacity onPress={toggleFavorite}>
           <Icon name="star" size={32} color={theme.COLOR[isFavorite ? 'active' : 'secondary']} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleCall}>
           <Icon name="phone" size={32} color={theme.COLOR.secondary} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleVideoCall}>
           <Icon name="videocam" size={32} color={theme.COLOR.secondary} />
         </TouchableOpacity>
       </View>
@@ -93,11 +119,33 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   imgText: {
     color: theme.COLOR.primary,
   },
   username: {
     fontSize: 16,
+  },
+  statusBox: {
+    width: 12,
+    height: 12,
+    borderRadius: 25,
+    position: 'absolute',
+    bottom: 0,
+    right: 8,
+    zIndex: 1,
+  },
+  offline: {
+    backgroundColor: 'gray',
+  },
+  busy: {
+    backgroundColor: 'red',
+  },
+  away: {
+    backgroundColor: 'orange',
+  },
+  online: {
+    backgroundColor: '#55d48b',
   },
 });

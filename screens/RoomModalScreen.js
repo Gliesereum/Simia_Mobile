@@ -1,13 +1,11 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 
 import Card from '../components/Card';
-import Actions from '../constants/actions/Actions';
 import Center from '../components/Center';
 
 export default function RoomModalScreen({ navigation }) {
-  const dispatch = useDispatch();
   const room = useSelector(state => state.room);
 
   if (!room._id) {
@@ -20,10 +18,7 @@ export default function RoomModalScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Card
-        room={room}
-        toggleFavorite={roomID => dispatch({ type: Actions.TOGGLE_FAVORITE, roomID: roomID })}
-      />
+      <Card room={room} />
     </View>
   );
 }

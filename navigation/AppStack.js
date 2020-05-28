@@ -132,7 +132,7 @@ export function BottomStack({}) {
         activeTintColor: theme.COLOR.active,
         inactiveTintColor: theme.COLOR.secondary,
       }}
-      initialRouteName="Search List"
+      initialRouteName="Room List"
     >
       <Tabs.Screen
         name="Search List"
@@ -162,6 +162,9 @@ export function AppStack({}) {
       />
       <AppRootStack.Screen
         name="AppModal"
+        options={({ route }) => ({
+          headerTitle: 'Room',
+        })}
         component={RoomModalScreen}
       />
     </AppRootStack.Navigator>

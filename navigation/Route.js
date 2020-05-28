@@ -9,6 +9,7 @@ import { AuthStack } from './AuthStack';
 import { AppStack } from './AppStack';
 import Center from '../components/Center';
 import User from '../constants/actions/User';
+import Actions from '../constants/actions/Actions';
 
 export const Routes = ({}) => {
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,7 @@ export const Routes = ({}) => {
       if (token && typeof token === 'string') {
         const user = jwtDecode(token);
         dispatch({ type: User.USER_LOGIN_SUCCESS, user, token, keep: true });
+        dispatch({ type: Actions.RTC_REGISTER });
       }
       setLoading(false);
     })

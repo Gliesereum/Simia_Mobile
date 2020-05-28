@@ -5,8 +5,10 @@ import theme from '../constants/theme'
 export function RenderTextField({
   label,
   keyboardType,
-  input: { onChange, inputStyle, ...restInput },
-  containerStyles = {}
+  input: { onChange, ...inputProps },
+  inputStyles = {},
+  containerStyles = {},
+  autoCapitalize = 'sentences',
 }) {
   return (
     <View style={{ ...styles.container, ...containerStyles }}>
@@ -16,10 +18,11 @@ export function RenderTextField({
         )
       }
       <TextInput
+        {...inputProps}
         keyboardType={keyboardType}
-        style={{ ...styles.input, ...inputStyle }}
+        style={{ ...styles.input, ...inputStyles }}
         onChangeText={onChange}
-        {...restInput}
+        autoCapitalize={autoCapitalize}
       />
     </View>
   )
@@ -53,7 +56,7 @@ const styles = StyleSheet.create({
   input: {
     borderColor: theme.COLOR.secondary,
     borderWidth: 1,
-    height: 37,
+    height: 40,
     flex: 1,
     padding: 5,
   },
