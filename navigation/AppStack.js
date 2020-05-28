@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import SearchPage from '../screens/SearchPage';
 import RoomsPage from '../screens/RoomsPage';
 import FavouritePage from '../screens/FavouritePage';
 import RoomModalScreen from '../screens/RoomModalScreen';
+import ConnectionScreen from '../screens/ConnectionScreen';
 import theme from '../constants/theme';
 import User from '../constants/actions/User';
+import Views from '../constants/actions/Views';
 
 // app navigator (contain BottomNavigator and Modal)
 const AppRootStack = createStackNavigator();
@@ -110,7 +112,19 @@ export function Favourite({}) {
   );
 }
 
-export function BottomStack({}) {
+export function BottomStack({ navigation }) {
+  const { connectionBackup, connection } = useSelector(state => state.view)
+
+  // if ring or ringing => go to connection modal
+  // when session finished => goBack
+  useEffect(() => {
+    if (connection === Views.OUTGOING) {
+      navigation.navigate('ConnectionModal');
+    } else if (connectionBackup !== Views.NONE && connection === Views.NONE) {
+      navigation.goBack();
+    }
+  }, [connection])
+
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
@@ -162,10 +176,17 @@ export function AppStack({}) {
       />
       <AppRootStack.Screen
         name="AppModal"
-        options={({ route }) => ({
+        options={{
           headerTitle: 'Room',
-        })}
+        }}
         component={RoomModalScreen}
+      />
+      <AppRootStack.Screen
+        name="ConnectionModal"
+        options={{
+          headerShown: false,
+        }}
+        component={ConnectionScreen}
       />
     </AppRootStack.Navigator>
   )

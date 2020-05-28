@@ -1,3 +1,6 @@
 export default {
   OUTGOING: 'OUTGOING',
+  INCOMING: 'INCOMING',
+  SESSION: 'SESSION',
+  NONE: 'NONE',
 }

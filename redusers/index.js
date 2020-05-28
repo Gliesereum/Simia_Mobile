@@ -8,6 +8,7 @@ import rooms from './rooms';
 import search from './search';
 import status from './status';
 import rtc from './rtc';
+import view from './view';
 
 // form reducers
 import { reducer as formReducer } from 'redux-form';
@@ -20,6 +21,6 @@ export default combineReducers({
   search,
   status,
   rtc,
-
+  view,
   form: formReducer,
 });
