@@ -1,16 +1,18 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
 import Center from '../components/Center';
 import theme from '../constants/theme';
 import Views from '../constants/actions/Views';
+import Actions from '../constants/actions/Actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function ConnectionScreen({ navigation }) {
   const connectionViewMode = useSelector(state => state.view.connection);
   const { video, audio } = useSelector(state => state.rtc);
+  const dispatch = useDispatch();
 
   const getBottomPanel = () => {
     switch (connectionViewMode) {
@@ -20,6 +22,7 @@ export default function ConnectionScreen({ navigation }) {
         return (
           <TouchableOpacity
             style={{ ...styles.iconBox, backgroundColor: theme.COLOR.active }}
+            onPress={() => dispatch({ type: Actions.RTC_CLOSE })}
           >
             <Icon
               name="call-end"
@@ -42,6 +45,7 @@ export default function ConnectionScreen({ navigation }) {
             </TouchableOpacity>
             <TouchableOpacity
               style={{ ...styles.iconBox, backgroundColor: theme.COLOR.active }}
+              onPress={() => dispatch({ type: Actions.RTC_CLOSE })}
             >
               <Icon
                 name="call-end"
@@ -74,6 +78,7 @@ export default function ConnectionScreen({ navigation }) {
             </TouchableOpacity>
             <TouchableOpacity
               style={{ ...styles.iconBox, backgroundColor: theme.COLOR.active }}
+              onPress={() => dispatch({ type: Actions.RTC_CLOSE })}
             >
               <Icon
                 name="call-end"

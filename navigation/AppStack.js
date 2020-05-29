@@ -118,7 +118,7 @@ export function BottomStack({ navigation }) {
   // if ring or ringing => go to connection modal
   // when session finished => goBack
   useEffect(() => {
-    if (connection === Views.OUTGOING) {
+    if (connection === Views.OUTGOING || connection === Views.INCOMING || connection === Views.SESSION) {
       navigation.navigate('ConnectionModal');
     } else if (connectionBackup !== Views.NONE && connection === Views.NONE) {
       navigation.goBack();

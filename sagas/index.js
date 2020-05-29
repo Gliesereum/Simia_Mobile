@@ -20,9 +20,11 @@ import {
   switchPeerVideo,
   switchAudio,
   closeSaga,
+  terminatedSaga,
 } from './rtc';
 import {
   ringSaga,
+  stopSaga,
 } from './sounds';
 
 export default function* watcherSaga() {
@@ -39,6 +41,8 @@ export default function* watcherSaga() {
     takeEvery(Actions.RTC_SWITCH_PEER_VIDEO, switchPeerVideo),
     takeEvery(Actions.RTC_SWITCH_AUDIO, switchAudio),
     takeEvery(Actions.SOUNDS_RING, ringSaga),
+    takeEvery(Actions.SOUNDS_STOP, stopSaga),
     takeEvery(Actions.RTC_CLOSE, closeSaga),
+    takeEvery(Actions.RTC_TERMINATED, terminatedSaga),
   ]);
 }

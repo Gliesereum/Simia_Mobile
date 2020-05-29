@@ -63,6 +63,10 @@ const createRoom = (socket, sender, users, group, video) => {
   socket.emit('rtc', { event: 'room', sender, users, isGroup: !!group, group, video });
 };
 
+const exitRoom = (socket, sender, roomId) => {
+  socket.emit('rtc', { event: 'exit', sender, roomId });
+}
+
 export function* rtcCreateRoomSaga(action) {
   // get devices permissions
   const stream = yield call(getUserMedia, action.video, action.audio);
@@ -122,6 +126,35 @@ export function* switchAudio(action) {
   localStream.getAudioTracks().forEach(track => track.enabled = !!action.audio)
 }
 
-export function* closeSaga() {
+export function* closeSaga(action) {
+  const pcs = yield select(state => state.rtc.pcs);
+  const room = yield select(state => state.rtc.room);
+  const peers = yield select(state => state.rtc.peers);
+  const streams = yield select(state => state.rtc.streams);
 
+  if (peers.length > 0 && action.emitted) {
+    const peerConnection = pcs[action.peer._id];
+    if (peerConnection && peerConnection.connectionState !== 'closed') peerConnection.close();
+    if (streams[action.peer._id]) yield put({ type: Actions.RTC_REMOTE_REMOVE_VIDEO_STREAM, stream: streams[action.peer._id], peer: action.peer });
+    return;
+  }
+  const localStream = yield select(state => state.rtc.localStream);
+  Object.keys(pcs).forEach(key => {
+    const peerConnection = pcs[key];
+    if (peerConnection && peerConnection.connectionState !== 'state') peerConnection.close();
+  });
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+  }
+  const user = yield select(state => state.user);
+  const socket = yield select(state => state.socketStore.socket);
+  const sender = getSelf(user);
+  if (!action.emitted && room) yield call(exitRoom, socket, sender, room.id);
+  yield put({ type: Actions.RTC_TERMINATED });
+}
+
+export function* terminatedSaga(action) {
+  const socket = yield select(state => state.socketStore.socket);
+  socket.emit('online');
+  yield put({ type: Actions.SOUNDS_STOP });
 }

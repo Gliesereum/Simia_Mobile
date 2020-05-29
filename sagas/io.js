@@ -30,39 +30,39 @@ function ioSubscribe(socket) {
 
     // ROOM
     socket.on('list-rooms', data => {
-      console.log('list-rooms');
+      // console.log('list-rooms');
       emit({ type: Actions.LIST_ROOMS_RESULT, data });
     });
     socket.on('create-room', data => {
-      console.log('create-room', data);
+      // console.log('create-room', data);
       emit({ type: Actions.CREATE_ROOM_RESULT, data });
     });
 
     // FAVORITE
     socket.on('list-favorites', data => {
-      console.log('list-favorites', data);
+      // console.log('list-favorites', data);
       emit({ type: Actions.LIST_FAVORITES_RESULT, data });
     });
     socket.on('toggle-favorite', data => {
-      console.log('toggle-favorite', data);
+      // console.log('toggle-favorite', data);
       emit({ type: Actions.TOGGLE_FAVORITE_RESULT, data });
     });
 
     // SEARCH
     socket.on('search', data => {
-      console.log('search', data);
+      // console.log('search', data);
       emit({ type: Actions.SEARCH_RESULT, data });
     });
 
     // MESSAGING
     socket.on('message-out', data => {
-      console.log('message-out', data);
+      // console.log('message-out', data);
       socket.emit('list-rooms', {});
     });
 
     // STATUS
     socket.on('list-status', data => {
-      console.log('list-status', data);
+      // console.log('list-status', data);
       emit({ type: Actions.STATUS_LIST, data });
     });
     socket.on('online', data => {
@@ -96,10 +96,19 @@ function ioSubscribe(socket) {
         case 'ringing':
           socket.emit('busy');
           emit({ type: Actions.RTC_OUTGOING, room: data.room, user: data.room.ring[0] });
-          emit({type: Actions.SOUNDS_RING});
+          emit({ type: Actions.SOUNDS_RING });
           break;
+        case 'ring':
+          socket.emit('busy');
+          emit({ type: Actions.RTC_INCOMING, room: data.room, user: data.sender, peerVideo: data.peerVideo });
+          emit({ type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video, peerVideo: data.peerVideo });
+          emit({ type: Actions.SOUNDS_RING });
+          break;
+        case 'exit':
+          emit({ type: Actions.RTC_EXIT, peer: data.sender });
+          emit({type: Actions.RTC_CLOSE, emitted: true, peer: data.sender});
       }
-    })
+    });
     return () => {};
   });
 
