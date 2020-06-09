@@ -91,7 +91,7 @@ function ioSubscribe(socket) {
       console.log('rtc', data);
       switch (data.event) {
         case 'switch-video':
-          emit({ type: Actions.RTC_SWITCH_PEER_VIDEO, video: data.video, peer: data.sender });
+          emit({ type: Actions.RTC_SWITCH_PEER_VIDEO, video: data.video, peer: data.sender,  });
           break;
         case 'ringing':
           socket.emit('busy');
@@ -103,6 +103,24 @@ function ioSubscribe(socket) {
           emit({ type: Actions.RTC_INCOMING, room: data.room, user: data.sender, peerVideo: data.peerVideo });
           emit({ type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video, peerVideo: data.peerVideo });
           emit({ type: Actions.SOUNDS_RING });
+          break;
+        case 'enter':
+          emit({type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video});
+          emit({type: Actions.RTC_ENTER, peer: data.sender});
+          emit({type: Actions.SOUNDS_STOP});
+          break;
+        case 'peer-video':
+          emit({ type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video })
+          break;
+        case 'ice-candidate':
+          console.log('ON ice-candidate');
+          emit({ type: Actions.RTC_CANDIDATE, candidate: data.candidate, peer: data.sender });
+          break;
+        case 'offer':
+          emit({type: Actions.RTC_OFFER, offer: data.offer, peer: data.sender});
+          break;
+        case 'answer':
+          emit({type: Actions.RTC_REMOTE_DESC, answer: data.answer, peer: data.sender});
           break;
         case 'exit':
           emit({ type: Actions.RTC_EXIT, peer: data.sender });

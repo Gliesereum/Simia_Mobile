@@ -79,6 +79,57 @@ const reducer = (state = initialState, action) => {
         status: Views.OUTGOING,
         peerVideo: action.peerVideo ? { ...state.peerVideo, ...action.peerVideo } : state.peerVideo,
       };
+    case Actions.RTC_ENTER:
+      return {
+        ...state,
+        room: {
+          ...state.room,
+          peers: [...state.room.peers, action.peer],
+          ring: removePeer(state.room.ring, action.peer),
+        },
+      };
+    case Actions.RTC_SETUP_LISTENERS:
+      return {
+        ...state,
+        peerConnection: action.peerConnection,
+      };
+    case Actions.RTC_SESSION_ACCEPTED:
+      return {
+        ...state,
+        status: Views.SESSION,
+      };
+    case Actions.RTC_OFFER:
+      return state;
+    case Actions.RTC_PEER_CONNECTION:
+      return {
+        ...state,
+        pcs: {
+          ...state.pcs,
+          [action.peer._id]: action.peerConnection,
+        },
+        peers: state.peers.includes(action.peer._id) ? state.peers : [...state.peers, action.peer._id],
+      };
+    case Actions.RTC_REMOTE_ADD_AUDIO_STREAM:
+      const isAudioStream = state.audioStreams
+        .some(stream => stream.getAudioTracks()[0].id === action.stream.getAudioTracks()[0].id);
+      if (isAudioStream) return state;
+      return {
+        ...state,
+        audioStreams: [...state.audioStreams, action.stream],
+      };
+    case Actions.RTC_REMOTE_ADD_VIDEO_STREAM:
+      const isVideoStream = state.videoStreams
+        .some(stream => stream.getVideoTracks()[0].id === action.stream.getVideoTracks()[0].id);
+      if (isVideoStream) return state;
+      return {
+        ...state,
+        videoStreams: [...state.videoStreams, action.stream],
+        remoteStream: state.isGroup ? action.stream : state.remoteStream,
+        streams: {
+          ...state.streams,
+          [action.peer._id]: action.stream,
+        },
+      };
     case Actions.RTC_REMOTE_REMOVE_VIDEO_STREAM:
       const newVideoStreams = state.videoStreams
         .filter(stream => stream.getVideoTracks()[0].id !== action.stream.getVideoTracks()[0].id);

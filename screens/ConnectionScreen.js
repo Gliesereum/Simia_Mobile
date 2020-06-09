@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { RTCView } from 'react-native-webrtc';
 
 import Center from '../components/Center';
 import theme from '../constants/theme';
@@ -11,8 +11,122 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function ConnectionScreen({ navigation }) {
   const connectionViewMode = useSelector(state => state.view.connection);
-  const { video, audio } = useSelector(state => state.rtc);
+  const videoStreams = useSelector(state => state.rtc.videoStreams);
+  const video = useSelector(state => state.rtc.video);
+  const audio = useSelector(state => state.rtc.audio);
+  const localStream = useSelector(state => state.rtc.localStream);
   const dispatch = useDispatch();
+
+  const getView = () => {
+    switch (connectionViewMode) {
+      case Views.NONE:
+      case Views.INCOMING:
+      case Views.OUTGOING:
+        return <Center><ActivityIndicator size={32} /></Center>;
+      case Views.SESSION:
+        return (
+          <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
+            <View
+              style={{
+                height: 200,
+                width: 300,
+                margin: 10,
+                padding: 10,
+                alignItems: 'center',
+                backgroundColor: theme.COLOR.secondary,
+              }}
+            >
+              <Text style={{ color: theme.COLOR.primary }}>Local</Text>
+              {
+                !localStream.getVideoTracks()[0].muted ? (
+                  <RTCView
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      width: '100%',
+                    }}
+                    streamURL={localStream.toURL()}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      width: '100%',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: theme.COLOR.primary,
+                      }}
+                    >
+                      USER
+                    </Text>
+                  </View>
+                )
+              }
+            </View>
+            {
+              videoStreams.length > 0 && videoStreams.map(stream => {
+                console.log(stream);
+                return (
+                    <View
+                      key={stream.toURL()}
+                      style={{
+                        height: 200,
+                        width: 300,
+                        margin: 10,
+                        padding: 10,
+                        alignItems: 'center',
+                        backgroundColor: theme.COLOR.secondary,
+                      }}
+                    >
+                      {
+                        !stream.getVideoTracks()[0].muted ? (
+                          <RTCView
+                            style={{
+                              flex: 1,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                            }}
+                            key={`Remote_RTCView`}
+                            streamURL={stream.toURL()}
+                          />
+                        ) : (
+                          <View
+                            style={{
+                              flex: 1,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: theme.COLOR.primary,
+                              }}
+                            >
+                              User (Receiver)
+                            </Text>
+                          </View>
+                        )
+                      }
+
+                    </View>
+                  )
+              })
+            }
+          </View>
+        )
+    }
+  };
 
   const getBottomPanel = () => {
     switch (connectionViewMode) {
@@ -36,9 +150,10 @@ export default function ConnectionScreen({ navigation }) {
           <>
             <TouchableOpacity
               style={{ ...styles.iconBox, backgroundColor: '#55d48b' }}
+              onPress={() => dispatch({ type: Actions.RTC_ACCEPT, video: true, audio: true })}
             >
               <Icon
-                name={video ? "videocam" : "videocam-off"}
+                name="videocam"
                 color={theme.COLOR.primary}
                 size={24}
               />
@@ -55,9 +170,10 @@ export default function ConnectionScreen({ navigation }) {
             </TouchableOpacity>
             <TouchableOpacity
               style={{ ...styles.iconBox, backgroundColor: '#55d48b' }}
+              onPress={() => dispatch({ type: Actions.RTC_ACCEPT, video: false, audio: true })}
             >
               <Icon
-                name={audio ? "volume-up" : "volume-mute"}
+                name="volume-up"
                 color={theme.COLOR.primary}
                 size={24}
               />
@@ -69,6 +185,7 @@ export default function ConnectionScreen({ navigation }) {
           <>
             <TouchableOpacity
               style={styles.iconBox}
+              onPress={() => dispatch({ type: Actions.RTC_SWITCH_VIDEO, video: !video })}
             >
               <Icon
                 name={video ? "videocam" : "videocam-off"}
@@ -88,6 +205,7 @@ export default function ConnectionScreen({ navigation }) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconBox}
+              onPress={() => dispatch({ type: Actions.RTC_SWITCH_AUDIO, audio: !audio })}
             >
               <Icon
                 name={audio ? "volume-up" : "volume-mute"}
@@ -104,9 +222,8 @@ export default function ConnectionScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Center>
-        <ActivityIndicator size={20} />
-      </Center>
+      <Text>Remote</Text>
+      {getView()}
       <View style={styles.bottomPanel}>
         {getBottomPanel()}
       </View>
