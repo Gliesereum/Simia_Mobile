@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "169306785862",
+    "firebase_url": "https://simia-82fc6.firebaseio.com",
+    "project_id": "simia-82fc6",
+    "storage_bucket": "simia-82fc6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169306785862:android:489c23a675d87366676247",
+        "android_client_info": {
+          "package_name": "com.simia_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169306785862-ncohapkcfurjfd8purrk57bs284vf3kt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmG6RCNr_DYY6xq1XZXsfFgiiQGQFqyPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169306785862-ncohapkcfurjfd8purrk57bs284vf3kt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

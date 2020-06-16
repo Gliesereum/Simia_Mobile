@@ -4,6 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector, useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import firestore from '@react-native-firebase/firestore';
 
 import SearchPage from '../screens/SearchPage';
 import RoomsPage from '../screens/RoomsPage';
@@ -13,6 +16,7 @@ import ConnectionScreen from '../screens/ConnectionScreen';
 import theme from '../constants/theme';
 import User from '../constants/actions/User';
 import Views from '../constants/actions/Views';
+import { prepareDeviceToken, subscribeOnMessage } from '../utils';
 
 // app navigator (contain BottomNavigator and Modal)
 const AppRootStack = createStackNavigator();
@@ -165,6 +169,13 @@ export function BottomStack({ navigation }) {
 }
 
 export function AppStack({}) {
+  const username = useSelector(state => state.user.username);
+  useEffect(() => {
+    prepareDeviceToken(username);
+
+    return subscribeOnMessage()
+  }, []);
+
   return (
     <AppRootStack.Navigator>
       <AppRootStack.Screen

@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../constants/theme';
 import Config from '../constants/config';
 import Actions from '../constants/actions/Actions';
-import { rtcCall } from '../utils';
+import { rtcCall, findUserToken, sendPush } from '../utils';
 
 export default function Card({ room }) {
   const { people } = room;
@@ -55,7 +55,15 @@ export default function Card({ room }) {
 
   const toggleFavorite = () => dispatch({ type: Actions.TOGGLE_FAVORITE, roomID: room._id });
 
-  const handleCall = () => {
+  const handleCall = async () => {
+    const otherDeviceToken = await findUserToken(other.username);
+
+    if (otherDeviceToken) {
+      // make push sending to other user with `$otherDeviceToken` token
+      console.log('otherDeviceToken', otherDeviceToken);
+      await sendPush(otherDeviceToken, { username: other.username });
+    }
+
     rtcCall({ room, status, other, video: false, audio: true, dispatch });
   };
 
@@ -71,7 +79,7 @@ export default function Card({ room }) {
       </View>
       <View style={styles.main}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.email}>{room.isGroup ? 'Group' : `@${user.username}`}</Text>
+        <Text style={styles.email}>{room.isGroup ? 'Group' : `@${other.username}`}</Text>
       </View>
       <View style={styles.features}>
         <TouchableOpacity onPress={toggleFavorite}>
