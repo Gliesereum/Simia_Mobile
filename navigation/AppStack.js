@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
-import { Button } from 'react-native';
+import { Button, NativeEventEmitter, NativeModules } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector, useDispatch } from 'react-redux';
-import AsyncStorage from '@react-native-community/async-storage';
-import messaging from '@react-native-firebase/messaging';
-import firestore from '@react-native-firebase/firestore';
 
 import SearchPage from '../screens/SearchPage';
 import RoomsPage from '../screens/RoomsPage';
@@ -122,6 +119,11 @@ export function BottomStack({ navigation }) {
   // if ring or ringing => go to connection modal
   // when session finished => goBack
   useEffect(() => {
+    const eventEmitter = new NativeEventEmitter(NativeModules.RNInvokeApp);
+    eventEmitter.addListener('appInvoked', (event) => {
+      console.log('event invoked', event);
+      navigation.navigate("ConnectionModal");
+    });
     if (connection === Views.OUTGOING || connection === Views.INCOMING || connection === Views.SESSION) {
       navigation.navigate('ConnectionModal');
     } else if (connectionBackup !== Views.NONE && connection === Views.NONE) {

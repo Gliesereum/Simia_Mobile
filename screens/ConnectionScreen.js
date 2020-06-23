@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { View, TouchableOpacity, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+} from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 
 import Center from '../components/Center';
+import Pulse from '../components/Pulse';
 import theme from '../constants/theme';
 import Views from '../constants/actions/Views';
 import Actions from '../constants/actions/Actions';
@@ -22,7 +28,13 @@ export default function ConnectionScreen({ navigation }) {
       case Views.NONE:
       case Views.INCOMING:
       case Views.OUTGOING:
-        return <Center><ActivityIndicator size={32} /></Center>;
+        return <Center>
+          <Pulse size={200} pulseMaxSize={300} duration={1000} outputRangeOpacity={[0.7, 0.1]} backgroundColor={theme.COLOR.active} />
+          <Pulse size={150} pulseMaxSize={250} duration={1000} outputRangeOpacity={[0.5, 0.1]} backgroundColor={theme.COLOR.secondary} />
+          <Pulse size={125} pulseMaxSize={200} duration={2000} outputRangeOpacity={[0, 0.7]} backgroundColor={theme.COLOR.active} />
+          <Pulse size={100} pulseMaxSize={150} duration={2000} outputRangeOpacity={[0, 0.5]} backgroundColor={theme.COLOR.secondary
+          } />
+        </Center>;
       case Views.SESSION:
         return (
           <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>

@@ -2,6 +2,7 @@ import Actions from '../constants/actions/Actions';
 import messaging from '@react-native-firebase/messaging';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-community/async-storage';
+import { NativeModules } from 'react-native';
 
 const rtcCall = ({
   room,
@@ -139,6 +140,11 @@ const sendPush = async (toToken, data = {}) => {
 const subscribeOnMessage = () => {
   const unsubscribe = messaging().onMessage(async remoteMessage => {
     console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    NativeModules.RNInvokeApp.invokeApp({
+      data: {
+        logMessage: 'invoke work',
+      },
+    });
   });
 
   return unsubscribe;

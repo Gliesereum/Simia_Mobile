@@ -60,11 +60,10 @@ export default function Card({ room }) {
 
     if (otherDeviceToken) {
       // make push sending to other user with `$otherDeviceToken` token
-      console.log('otherDeviceToken', otherDeviceToken);
       await sendPush(otherDeviceToken, { username: other.username });
     }
 
-    rtcCall({ room, status, other, video: false, audio: true, dispatch });
+    // rtcCall({ room, status, other, video: false, audio: true, dispatch });
   };
 
   const handleVideoCall = () => {
