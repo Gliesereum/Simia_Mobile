@@ -1,7 +1,7 @@
 import React, { useState, useEffect }  from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, NativeEventEmitter, NativeModules } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
 
@@ -16,8 +16,16 @@ export const Routes = ({}) => {
   const id = useSelector(state => state.user.id);
   const exp = useSelector(state => state.user.exp);
   const dispatch = useDispatch();
+  let defaultAppRouteName = "Room List";
 
   useEffect(() => {
+    const eventEmitter = new NativeEventEmitter(NativeModules.RNInvokeApp);
+    eventEmitter.addListener('appInvoked', (event) => {
+      console.log('event invoked', event);
+      defaultAppRouteName = "ConnectionModal";
+      dispatch({ type: Actions.TRY_CONNECTING, user: event.data });
+    });
+
     AsyncStorage.getItem('token')
       .then(token => {
       if (token && typeof token === 'string') {
@@ -47,7 +55,7 @@ export const Routes = ({}) => {
   return (
     <NavigationContainer>
       {
-        (!id || !exp) ? <AuthStack /> : <AppStack />
+        (!id || !exp) ? <AuthStack /> : <AppStack defaultAppRouteName={defaultAppRouteName} />
       }
     </NavigationContainer>
   )

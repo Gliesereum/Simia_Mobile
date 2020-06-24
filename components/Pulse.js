@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import { Animated, Easing, View, StyleSheet, Dimensions } from 'react-native';
-
-const { height, width } = Dimensions.get('window');
+import { Animated, Easing, View, StyleSheet } from 'react-native';
 
 export default function Pulse({ size, pulseMaxSize, duration, outputRangeOpacity, backgroundColor }) {
   const anim = new Animated.Value(0);
@@ -22,10 +20,10 @@ export default function Pulse({ size, pulseMaxSize, duration, outputRangeOpacity
 
   return (
     <View style={[styles.callProcessBox, {
-      width: pulseMaxSize,
-      height: pulseMaxSize,
-      marginLeft: -pulseMaxSize/2,
-      marginTop: -pulseMaxSize/2,
+      width: size,
+      height: size,
+      marginLeft: -size/2,
+      marginTop: -size/2,
     }]}>
       <Animated.View
         style={[
@@ -55,8 +53,6 @@ const styles = StyleSheet.create({
   callProcessBox: {
     justifyContent: 'center',
     alignItems: 'center',
-    left: width/2,
-    top: height/2,
     position: 'absolute',
   },
 });

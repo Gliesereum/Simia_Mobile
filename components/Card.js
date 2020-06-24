@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import theme from '../constants/theme';
 import Config from '../constants/config';
 import Actions from '../constants/actions/Actions';
-import { rtcCall, findUserToken, sendPush } from '../utils';
+import { rtcCall } from '../utils';
 
 export default function Card({ room }) {
   const { people } = room;
@@ -56,18 +56,11 @@ export default function Card({ room }) {
   const toggleFavorite = () => dispatch({ type: Actions.TOGGLE_FAVORITE, roomID: room._id });
 
   const handleCall = async () => {
-    const otherDeviceToken = await findUserToken(other.username);
-
-    if (otherDeviceToken) {
-      // make push sending to other user with `$otherDeviceToken` token
-      await sendPush(otherDeviceToken, { username: other.username });
-    }
-
-    // rtcCall({ room, status, other, video: false, audio: true, dispatch });
+    await rtcCall({ room, status, other, video: false, audio: true, dispatch, user });
   };
 
-  const handleVideoCall = () => {
-    rtcCall({ room, status, other, video: true, audio: true, dispatch });
+  const handleVideoCall = async () => {
+    await rtcCall({ room, status, other, video: true, audio: true, dispatch, user });
   };
 
   return (

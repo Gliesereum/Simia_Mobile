@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button, NativeEventEmitter, NativeModules } from 'react-native';
+import { Button } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -119,14 +119,9 @@ export function BottomStack({ navigation }) {
   // if ring or ringing => go to connection modal
   // when session finished => goBack
   useEffect(() => {
-    const eventEmitter = new NativeEventEmitter(NativeModules.RNInvokeApp);
-    eventEmitter.addListener('appInvoked', (event) => {
-      console.log('event invoked', event);
-      navigation.navigate("ConnectionModal");
-    });
-    if (connection === Views.OUTGOING || connection === Views.INCOMING || connection === Views.SESSION) {
+    if (connection !== Views.view.NONE) {
       navigation.navigate('ConnectionModal');
-    } else if (connectionBackup !== Views.NONE && connection === Views.NONE) {
+    } else if (connectionBackup !== Views.view.NONE && connection === Views.view.NONE) {
       navigation.goBack();
     }
   }, [connection])
@@ -170,7 +165,7 @@ export function BottomStack({ navigation }) {
   )
 }
 
-export function AppStack({}) {
+export function AppStack({ defaultAppRouteName }) {
   const username = useSelector(state => state.user.username);
   useEffect(() => {
     prepareDeviceToken(username);
@@ -179,7 +174,9 @@ export function AppStack({}) {
   }, []);
 
   return (
-    <AppRootStack.Navigator>
+    <AppRootStack.Navigator
+      initialRouteName={defaultAppRouteName}
+    >
       <AppRootStack.Screen
         options={{
           headerShown: false,

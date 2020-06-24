@@ -14,7 +14,7 @@ const configuration = {
 };
 
 const getUserMedia = async (video, audio) => {
-  let result;
+  let result = null;
   let sourceId;
 
   await mediaDevices.enumerateDevices().then(sourceInfo => {
@@ -122,7 +122,7 @@ const setupListeners = (socket, peerConnection, user, sender, isOffer = false) =
     peerConnection.addEventListener('addstream', event => {
       console.log('addstream');
       const stream = event.stream;
-      emit({type: Actions.RTC_REMOTE_ADD_VIDEO_STREAM, stream, peer: user});
+      emit({ type: Actions.RTC_REMOTE_ADD_VIDEO_STREAM, stream, peer: user });
     });
     peerConnection.addEventListener('negotiationneeded', event => {
       console.log('negotiationneeded');
@@ -189,7 +189,7 @@ export function* acceptSaga(action) {
   }
 
   if (stream.getVideoTracks().length > 0) {
-    stream.getVideoTracks()[0].enabled = action.video;
+    stream.getVideoTracks()[0].enabled = !!action.video;
   }
 
   yield put({ type: Actions.RTC_SWITCH_VIDEO, video: action.video });

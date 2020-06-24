@@ -9,11 +9,7 @@ import messaging from '@react-native-firebase/messaging';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
-  NativeModules.RNInvokeApp.invokeApp({
-    data: {
-      logMessage: 'invoke work',
-    },
-  });
+  NativeModules.RNInvokeApp.invokeApp({ data: remoteMessage.data });
 });
 
 AppRegistry.registerComponent(appName, () => App);

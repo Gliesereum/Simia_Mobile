@@ -42,12 +42,21 @@ const reducer = (state = initialState, action) => {
         video: action.video,
       };
     case Actions.RTC_SET_PEER_VIDEO:
+      const peersVideoStreams = state.videoStreams
+        .map(stream => {
+          if (stream.getVideoTracks()[0].id === state.streams[action.peer._id].getVideoTracks()[0].id) {
+            stream.getVideoTracks()[0].enabled = !!action.video;
+            return stream;
+          }
+          return stream;
+        });
       return {
         ...state,
         peerVideo: {
           ...state.peerVideo,
           [action.peer._id]: action.video,
         },
+        videoStreams: peersVideoStreams,
       };
     case Actions.RTC_SWITCHED_PEER_VIDEO:
       return {
@@ -69,14 +78,14 @@ const reducer = (state = initialState, action) => {
         ...state,
         user: action.user,
         room: action.room,
-        status: Views.OUTGOING,
+        status: Views.status.OUTGOING,
       };
     case Actions.RTC_INCOMING:
       return {
         ...state,
         user: action.user,
         room: action.room,
-        status: Views.OUTGOING,
+        status: Views.status.OUTGOING,
         peerVideo: action.peerVideo ? { ...state.peerVideo, ...action.peerVideo } : state.peerVideo,
       };
     case Actions.RTC_ENTER:
@@ -96,7 +105,7 @@ const reducer = (state = initialState, action) => {
     case Actions.RTC_SESSION_ACCEPTED:
       return {
         ...state,
-        status: Views.SESSION,
+        status: Views.status.SESSION,
       };
     case Actions.RTC_OFFER:
       return state;

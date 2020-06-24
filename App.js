@@ -15,7 +15,6 @@ import { Provider } from 'react-redux';
 import rootReducer from './redusers';
 import watcherSaga from './sagas';
 
-import StreamActionPanel from './components/StreamActionPanel';
 import { Routes } from './navigation/Route';
 
 // create the saga middleware
@@ -37,13 +36,6 @@ sagaMiddleware.run(watcherSaga);
 const App: () => React$Node = () => {
   return (
     <Provider store={store}>
-      {/*<View style={styles.container}>*/}
-      {/*  <ScrollView*/}
-      {/*    contentInsetAdjustmentBehavior="automatic"*/}
-      {/*    style={styles.contentContainer}>*/}
-      {/*  </ScrollView>*/}
-      {/*  <StreamActionPanel />*/}
-      {/*</View>*/}
       <Routes />
     </Provider>
   );

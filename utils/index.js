@@ -4,27 +4,39 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-community/async-storage';
 import { NativeModules } from 'react-native';
 
-const rtcCall = ({
+const rtcCall = async ({
   room,
   status,
   other,
   video,
   audio,
   dispatch,
+  user,
 }) => {
   if (room.isGroup) {
     return dispatch({ type: Actions.RTC_ROOM_CREATE, group: room, users: [...room.people], video, audio });
   } else if (status.online.includes(other._id) || status.away.includes(other._id)) {
     return dispatch({ type: Actions.RTC_ROOM_CREATE, users: [other], video, audio });
-  } else if (status.busy.includes(other._id)) {
-    console.log('User is busy.')
-    return 'User is busy.';
-  } else if (!status.busy.includes(other._id) && !status.away.includes(other._id) && !status.online.includes(other._id)) {
-    console.log('User is offline.')
-    return 'User is offline.';
   } else {
-    console.log('User can not receive calls.');
-    return 'User can not receive calls.';
+    dispatch({ type: Actions.TRY_CONNECTING, user: other });
+    const otherDeviceToken = await findUserToken(other.username);
+
+    if (otherDeviceToken) {
+      // make push sending to other user with `$otherDeviceToken` token
+      const result = await sendPush(
+        otherDeviceToken,
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+        });
+
+      // TODO: видалити цю частину. Потрібно дочекатись сокет еміта від співбесідника про те, що він готовий до
+      //  телефонування. В емітному обробнику потрібно буде викликами
+      //  ```return dispatch({ type.Actions.RTC_ROOM_CREATE, users: [other], video, audio });```
+      if (result) {
+        return dispatch({ type: Actions.RTC_ROOM_CREATE, users: [other], video, audio });
+      }
+    }
   }
 };
 
@@ -105,7 +117,7 @@ const findUserToken = async (username) => {
 };
 
 const sendPush = async (toToken, data = {}) => {
-  if (!toToken) return;
+  if (!toToken) return false;
 
   const FIREBASE_API_KEY = "AAAAJ2t4iEY:APA91bFXItLjAs7RWMqOiecF96Crr0Bq-Y6MCz1fWPV9ZVOc4aXoTmAfi1MvhJLxddMmOn3Niqoj_J_LfZkhjKePBUEm0Q7gQzW09tZKs_tgQ2s6BVlauTlIRb_b4di9vgj-J8eSdtgl";
 
@@ -116,7 +128,7 @@ const sendPush = async (toToken, data = {}) => {
   const message = {
     to: toToken,
     data: {
-      fromUser: data.username,
+      user: data.username,
     },
     contentAvailable: true,
     priority: 'high',
@@ -130,10 +142,12 @@ const sendPush = async (toToken, data = {}) => {
 
   if (response.status === 400) {
     response = await response.text();
-    console.log('send FCM message (error)', response)
+    console.log('send FCM message (error)', response);
+    return false;
   } else {
     response = await response.json();
-    console.log('send FCM message (error)', response)
+    console.log('send FCM message (success)', response);
+    return true;
   }
 };
 

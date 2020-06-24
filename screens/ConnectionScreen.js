@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   Text,
+  Dimensions,
 } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 
@@ -15,68 +16,94 @@ import Views from '../constants/actions/Views';
 import Actions from '../constants/actions/Actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+const { width } = Dimensions.get("window");
+
 export default function ConnectionScreen({ navigation }) {
   const connectionViewMode = useSelector(state => state.view.connection);
+  const connectionStatus = useSelector(state => state.view.connectionStatus);
+  const connectionPerson = useSelector(state => state.view.connectionPerson);
   const videoStreams = useSelector(state => state.rtc.videoStreams);
   const video = useSelector(state => state.rtc.video);
   const audio = useSelector(state => state.rtc.audio);
   const localStream = useSelector(state => state.rtc.localStream);
+  const user = useSelector(state => state.user);
   const dispatch = useDispatch();
 
-  const getView = () => {
+  const getMain = () => {
     switch (connectionViewMode) {
-      case Views.NONE:
-      case Views.INCOMING:
-      case Views.OUTGOING:
+      case Views.view.CONNECTING:
+      case Views.view.NONE:
+      case Views.view.INCOMING:
+      case Views.view.OUTGOING:
         return <Center>
-          <Pulse size={200} pulseMaxSize={300} duration={1000} outputRangeOpacity={[0.7, 0.1]} backgroundColor={theme.COLOR.active} />
-          <Pulse size={150} pulseMaxSize={250} duration={1000} outputRangeOpacity={[0.5, 0.1]} backgroundColor={theme.COLOR.secondary} />
-          <Pulse size={125} pulseMaxSize={200} duration={2000} outputRangeOpacity={[0, 0.7]} backgroundColor={theme.COLOR.active} />
-          <Pulse size={100} pulseMaxSize={150} duration={2000} outputRangeOpacity={[0, 0.5]} backgroundColor={theme.COLOR.secondary
-          } />
+          <Pulse
+            size={325}
+            pulseMaxSize={275}
+            duration={700}
+            outputRangeOpacity={[0.1, 0.1]}
+            backgroundColor={theme.COLOR.active}
+          />
+          <Pulse
+            size={275}
+            pulseMaxSize={225}
+            duration={700}
+            outputRangeOpacity={[0.2, 0.1]}
+            backgroundColor={theme.COLOR.active}
+          />
+          <Pulse
+            size={225}
+            pulseMaxSize={175}
+            duration={700}
+            outputRangeOpacity={[0.3, 0.2]}
+            backgroundColor={theme.COLOR.active}
+          />
+          <Pulse
+            size={175}
+            pulseMaxSize={125}
+            duration={700}
+            outputRangeOpacity={[0.4, 0.3]}
+            backgroundColor={theme.COLOR.active}
+          />
+          <Pulse
+            size={125}
+            pulseMaxSize={75}
+            duration={700}
+            outputRangeOpacity={[0.5, 0.4]}
+            backgroundColor={theme.COLOR.active}
+          />
+          <Pulse
+            size={75}
+            pulseMaxSize={25}
+            duration={700}
+            outputRangeOpacity={[0.6, 0.5]}
+            backgroundColor={theme.COLOR.active}
+          />
         </Center>;
-      case Views.SESSION:
+      case Views.view.SESSION:
         return (
-          <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-            <View
-              style={{
-                height: 200,
-                width: 300,
-                margin: 10,
-                padding: 10,
-                alignItems: 'center',
-                backgroundColor: theme.COLOR.secondary,
-              }}
-            >
-              <Text style={{ color: theme.COLOR.primary }}>Local</Text>
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignSelf: 'stretch',
+            position: 'relative',
+          }}>
+            <View style={styles.localVideoContainer}>
               {
-                !localStream.getVideoTracks()[0].muted ? (
+                (
+                  localStream
+                  && localStream.getVideoTracks().length > 0
+                  && localStream.getVideoTracks()[0].enabled
+                ) ? (
                   <RTCView
-                    style={{
-                      flex: 1,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                      width: '100%',
-                    }}
+                    style={[styles.localRTCVideo]}
+                    objectFit={"cover"}
                     streamURL={localStream.toURL()}
+                    zOrder={2}
                   />
                 ) : (
-                  <View
-                    style={{
-                      flex: 1,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                      width: '100%',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: theme.COLOR.primary,
-                      }}
-                    >
-                      USER
+                  <View style={styles.localRTCVideoOff}>
+                    <Text style={styles.localRTCVideoOffText}>
+                      {`${user.firstName} ${user.lastName}`}
                     </Text>
                   </View>
                 )
@@ -84,53 +111,33 @@ export default function ConnectionScreen({ navigation }) {
             </View>
             {
               videoStreams.length > 0 && videoStreams.map(stream => {
-                console.log(stream);
                 return (
                     <View
                       key={stream.toURL()}
-                      style={{
-                        height: 200,
-                        width: 300,
-                        margin: 10,
-                        padding: 10,
-                        alignItems: 'center',
-                        backgroundColor: theme.COLOR.secondary,
-                      }}
+                      style={styles.remoteVideoContainer}
                     >
                       {
-                        !stream.getVideoTracks()[0].muted ? (
+                        stream
+                        && stream.getVideoTracks().length > 0
+                        && stream.getVideoTracks()[0].enabled ? (
                           <RTCView
-                            style={{
-                              flex: 1,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                            }}
+                            style={styles.remoteRTCVideo}
                             key={`Remote_RTCView`}
                             streamURL={stream.toURL()}
+                            objectFit={"cover"}
+                            zOrder={1}
                           />
                         ) : (
-                          <View
-                            style={{
-                              flex: 1,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: '100%',
-                              width: '100%',
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: theme.COLOR.primary,
-                              }}
-                            >
-                              User (Receiver)
+                          <View style={styles.remoteRTCVideoOff}>
+                            <Text style={styles.remoteRTCVideoOffText}>
+                              {
+                                connectionPerson
+                                && `${connectionPerson.firstName.substr(0,1).toUpperCase()}${connectionPerson.lastName.substr(0,1).toUpperCase()}`
+                              }
                             </Text>
                           </View>
                         )
                       }
-
                     </View>
                   )
               })
@@ -140,11 +147,12 @@ export default function ConnectionScreen({ navigation }) {
     }
   };
 
-  const getBottomPanel = () => {
+  const getControls = () => {
     switch (connectionViewMode) {
-      case Views.NONE:
+      case Views.view.NONE:
         return <View />;
-      case Views.OUTGOING:
+      case Views.view.OUTGOING:
+      case Views.view.CONNECTING:
         return (
           <TouchableOpacity
             style={{ ...styles.iconBox, backgroundColor: theme.COLOR.active }}
@@ -157,7 +165,7 @@ export default function ConnectionScreen({ navigation }) {
             />
           </TouchableOpacity>
         );
-      case Views.INCOMING:
+      case Views.view.INCOMING:
         return (
           <>
             <TouchableOpacity
@@ -192,7 +200,7 @@ export default function ConnectionScreen({ navigation }) {
             </TouchableOpacity>
           </>
         );
-      case Views.SESSION:
+      case Views.view.SESSION:
         return (
           <>
             <TouchableOpacity
@@ -231,13 +239,24 @@ export default function ConnectionScreen({ navigation }) {
         return <View />
     }
   };
-
   return (
     <View style={styles.container}>
-      <Text>Remote</Text>
-      {getView()}
+      <View style={styles.title}>
+        <Text style={styles.status}>
+          {connectionStatus}
+        </Text>
+        {
+          connectionPerson
+          && <Text style={styles.withPerson}>
+            {`${connectionPerson.firstName} ${connectionPerson.lastName}`}
+          </Text>
+        }
+      </View>
+      <View style={styles.main}>
+        {getMain()}
+      </View>
       <View style={styles.bottomPanel}>
-        {getBottomPanel()}
+        {getControls()}
       </View>
     </View>
   )
@@ -246,6 +265,7 @@ export default function ConnectionScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.COLOR.secondary,
   },
   bottomPanel: {
     backgroundColor: theme.COLOR.secondary,
@@ -264,5 +284,80 @@ const styles = StyleSheet.create({
   },
   videoBox: {
 
+  },
+  title: {
+    position: 'absolute',
+    height: 100,
+    zIndex: 2,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    width: width,
+    backgroundColor: 'rgba(0, 0, 0, 0.3),'
+  },
+  status: {
+    color: theme.COLOR.primary,
+    fontSize: 18,
+  },
+  withPerson: {
+    color: theme.COLOR.primary,
+    fontSize: 42,
+    fontWeight: 'bold',
+  },
+  main: {
+    position: 'relative',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  remoteVideoContainer: {
+    flex: 1,
+    backgroundColor: theme.COLOR.secondary,
+    justifyContent: 'center',
+  },
+  remoteRTCVideo: {
+    flex: 1,
+    backgroundColor: theme.COLOR.secondary,
+  },
+  remoteRTCVideoOff: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 150,
+    height: 150,
+    width: 150,
+    borderColor: theme.COLOR.primary,
+    borderWidth: 2,
+    backgroundColor: theme.COLOR.secondary,
+  },
+  remoteRTCVideoOffText: {
+    color: theme.COLOR.primary,
+    fontSize: 48,
+  },
+  localVideoContainer: {
+    position: 'absolute',
+    backgroundColor: theme.COLOR.secondary,
+    bottom: 5,
+    right: 5,
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    height: 150,
+    zIndex: 999,
+    width: 150,
+    overflow: 'hidden',
+  },
+  localRTCVideo: {
+    flex: 1,
+    backgroundColor: theme.COLOR.secondary,
+  },
+  localRTCVideoOff: {
+    width: 150,
+    height: 150,
+    backgroundColor: theme.COLOR.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  localRTCVideoOffText: {
+    color: theme.COLOR.primary,
   },
 });
