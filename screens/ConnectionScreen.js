@@ -5,18 +5,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Text,
-  Dimensions,
 } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Center from '../components/Center';
 import Pulse from '../components/Pulse';
 import theme from '../constants/theme';
 import Views from '../constants/actions/Views';
 import Actions from '../constants/actions/Actions';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-const { width } = Dimensions.get("window");
+import Header from '../components/ConnectionRoom/Header';
 
 export default function ConnectionScreen({ navigation }) {
   const connectionViewMode = useSelector(state => state.view.connection);
@@ -32,7 +30,6 @@ export default function ConnectionScreen({ navigation }) {
   const getMain = () => {
     switch (connectionViewMode) {
       case Views.view.CONNECTING:
-      case Views.view.NONE:
       case Views.view.INCOMING:
       case Views.view.OUTGOING:
         return <Center>
@@ -144,6 +141,12 @@ export default function ConnectionScreen({ navigation }) {
             }
           </View>
         )
+      case Views.view.NONE:
+        return (
+          <View>
+            <Text>NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE NONE </Text>
+          </View>
+        );
     }
   };
 
@@ -241,17 +244,10 @@ export default function ConnectionScreen({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.title}>
-        <Text style={styles.status}>
-          {connectionStatus}
-        </Text>
-        {
-          connectionPerson
-          && <Text style={styles.withPerson}>
-            {`${connectionPerson.firstName} ${connectionPerson.lastName}`}
-          </Text>
-        }
-      </View>
+      <Header
+        speaker={connectionPerson}
+        status={connectionStatus}
+      />
       <View style={styles.main}>
         {getMain()}
       </View>
@@ -282,29 +278,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 25,
   },
-  videoBox: {
-
-  },
-  title: {
-    position: 'absolute',
-    height: 100,
-    zIndex: 2,
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    width: width,
-    backgroundColor: 'rgba(0, 0, 0, 0.3),'
-  },
-  status: {
-    color: theme.COLOR.primary,
-    fontSize: 18,
-  },
-  withPerson: {
-    color: theme.COLOR.primary,
-    fontSize: 42,
-    fontWeight: 'bold',
-  },
   main: {
-    position: 'relative',
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',

@@ -83,7 +83,7 @@ const exitRoom = (socket, sender, roomId) => {
   socket.emit('rtc', { event: 'exit', sender, roomId });
 };
 
-const setupListeners = (socket, peerConnection, user, sender, isOffer = false) => {
+const setupListeners = (socket, peerConnection, user, sender, video, isOffer = false) => {
   console.log(`setting up listeners for PeerConnection with ${user.firstName} ${user.lastName}`);
   return eventChannel(emit => {
     peerConnection.addEventListener('icecandidate', event => {
@@ -121,7 +121,8 @@ const setupListeners = (socket, peerConnection, user, sender, isOffer = false) =
     })
     peerConnection.addEventListener('addstream', event => {
       console.log('addstream');
-      const stream = event.stream;
+      const { stream } = event;
+      if (stream.getVideoTracks().length > 0) stream.getVideoTracks()[0].enabled = video;
       emit({ type: Actions.RTC_REMOTE_ADD_VIDEO_STREAM, stream, peer: user });
     });
     peerConnection.addEventListener('negotiationneeded', event => {
@@ -240,7 +241,7 @@ export function* answerSaga(action) {
 export function* setupListenersSaga(action) {
   const video = yield select(state => state.rtc.peerVideo[action.peer._id]);
   const socket = yield select(state => state.socketStore.socket);
-  const channel = yield call(setupListeners, socket, action.peerConnection, action.peer, action.sender, action.isOffer);
+  const channel = yield call(setupListeners, socket, action.peerConnection, action.peer, action.sender, video, action.isOffer);
 
   while (true) {
     let action = yield take(channel);

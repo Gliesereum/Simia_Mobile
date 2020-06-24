@@ -88,41 +88,48 @@ function ioSubscribe(socket) {
 
     // RTC
     socket.on('rtc', data => {
-      console.log('rtc', data);
       switch (data.event) {
         case 'switch-video':
+          console.log('switch-video', data);
           emit({ type: Actions.RTC_SWITCH_PEER_VIDEO, video: data.video, peer: data.sender,  });
           break;
         case 'ringing':
+          console.log('ringing', data);
           socket.emit('busy');
           emit({ type: Actions.RTC_OUTGOING, room: data.room, user: data.room.ring[0] });
           emit({ type: Actions.SOUNDS_RING });
           break;
         case 'ring':
+          console.log('ring', data);
           socket.emit('busy');
           emit({ type: Actions.RTC_INCOMING, room: data.room, user: data.sender, peerVideo: data.peerVideo });
           emit({ type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video, peerVideo: data.peerVideo });
           emit({ type: Actions.SOUNDS_RING });
           break;
         case 'enter':
+          console.log('enter', data);
           emit({type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video});
           emit({type: Actions.RTC_ENTER, peer: data.sender});
           emit({type: Actions.SOUNDS_STOP});
           break;
         case 'peer-video':
+          console.log('peer-video', data);
           emit({ type: Actions.RTC_SET_PEER_VIDEO, peer: data.sender, video: data.video })
           break;
         case 'ice-candidate':
-          console.log('ON ice-candidate');
+          // console.log('ice-candidate', data);
           emit({ type: Actions.RTC_CANDIDATE, candidate: data.candidate, peer: data.sender });
           break;
         case 'offer':
+          // console.log('offer', data);
           emit({type: Actions.RTC_OFFER, offer: data.offer, peer: data.sender});
           break;
         case 'answer':
+          // console.log('answer', data);
           emit({type: Actions.RTC_REMOTE_DESC, answer: data.answer, peer: data.sender});
           break;
         case 'exit':
+          console.log('exit', data);
           emit({ type: Actions.RTC_EXIT, peer: data.sender });
           emit({type: Actions.RTC_CLOSE, emitted: true, peer: data.sender});
       }
